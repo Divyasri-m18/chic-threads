@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 
 function Login() {
   const navigate = useNavigate();
@@ -19,14 +20,12 @@ function Login() {
     }));
   };
 
-  // ✅ CLEAN SINGLE handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔴 ONLY THIS URL CHANGED
     const url = isLogin
-      ? "https://chic-threads-backend.onrender.com/api/auth/login"
-      : "https://chic-threads-backend.onrender.com/api/auth/register";
+      ? `${API_BASE}/api/auth/login`
+      : `${API_BASE}/api/auth/register`;
 
     try {
       const res = await fetch(url, {
@@ -37,24 +36,19 @@ function Login() {
 
       const data = await res.json();
 
-      // ❌ backend error
       if (!res.ok) {
         alert(data.error || "Server error");
         return;
       }
 
-      // ✅ LOGIN SUCCESS
       if (isLogin) {
         localStorage.setItem("token", data.token);
         alert("Login successful ✅");
         navigate("/");
-      }
-      // ✅ REGISTER SUCCESS
-      else {
+      } else {
         alert("Registration successful 🎉 Please login");
         setIsLogin(true);
       }
-
     } catch (err) {
       console.error(err);
       alert("Server error");
@@ -67,66 +61,43 @@ function Login() {
         {isLogin ? "Welcome Back" : "Create Account"}
       </h1>
 
-      <p className="auth-subtitle">
-        {isLogin
-          ? "Sign in to continue shopping"
-          : "Join us for exclusive offers"}
-      </p>
-
       <form onSubmit={handleSubmit}>
         {!isLogin && (
-          <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
-        )}
-
-        <div className="form-group">
-          <label>Email</label>
           <input
-            type="email"
-            name="email"
-            value={formData.email}
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
             onChange={handleChange}
-            placeholder="Enter your email"
             required
           />
-        </div>
-
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-
-        {isLogin && (
-          <p style={{ textAlign: "right", marginBottom: "20px" }}>
-            <span style={{ color: "#c48b8b", fontSize: "0.9rem" }}>
-              Forgot Password?
-            </span>
-          </p>
         )}
 
-        <button type="submit" className="auth-btn">
-          {isLogin ? "Sign In" : "Create Account"}
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+
+        <button type="submit">
+          {isLogin ? "Login" : "Register"}
         </button>
       </form>
 
-      <p className="auth-footer">
-        {isLogin ? "Don't have an account? " : "Already have an account? "}
+      <p>
+        {isLogin ? "No account? " : "Already have account? "}
         <a
           href="#"
           onClick={(e) => {
@@ -134,15 +105,11 @@ function Login() {
             setIsLogin(!isLogin);
           }}
         >
-          {isLogin ? "Sign Up" : "Sign In"}
+          {isLogin ? "Register" : "Login"}
         </a>
       </p>
 
-      <div style={{ marginTop: "30px", textAlign: "center" }}>
-        <Link to="/" style={{ color: "#7a6b6b", fontSize: "0.9rem" }}>
-          ← Back to Home
-        </Link>
-      </div>
+      <Link to="/">← Back to Home</Link>
     </div>
   );
 }

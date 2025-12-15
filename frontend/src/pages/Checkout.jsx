@@ -30,36 +30,42 @@ function Checkout() {
     }));
   };
 
-  // ✅ UPDATED PART (ORDER + EMAIL TRIGGER)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const orderId = "ORD" + Date.now();
 
     try {
-      await fetch("https://chic-threads-backend.onrender.com/api/orders"
-, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          orderId,
-          userEmail: formData.email,
-          items: cartItems,
-          totalAmount: total,
-          paymentMethod: formData.paymentMethod,
-          shippingAddress: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            pincode: formData.pincode
-          }
-        })
-      });
+      const res = await fetch(
+        "https://chic-threads-backend.onrender.com/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          body: JSON.stringify({
+            orderId,
+            userEmail: formData.email,
+            items: cartItems,
+            totalAmount: total,
+            paymentMethod: formData.paymentMethod,
+            shippingAddress: {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              phone: formData.phone,
+              address: formData.address,
+              city: formData.city,
+              state: formData.state,
+              pincode: formData.pincode
+            }
+          })
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Order failed");
+      }
 
       clearCart();
       navigate('/order-success');
@@ -128,9 +134,26 @@ function Checkout() {
 
           <h2 className="form-title" style={{ marginTop: '30px' }}>Payment Method</h2>
           
-          <label><input type="radio" name="paymentMethod" value="cod" checked={formData.paymentMethod === 'cod'} onChange={handleChange}/> Cash on Delivery</label>
-          <label><input type="radio" name="paymentMethod" value="upi" checked={formData.paymentMethod === 'upi'} onChange={handleChange}/> UPI</label>
-          <label><input type="radio" name="paymentMethod" value="card" checked={formData.paymentMethod === 'card'} onChange={handleChange}/> Card</label>
+          <label>
+            <input type="radio" name="paymentMethod" value="cod"
+              checked={formData.paymentMethod === 'cod'}
+              onChange={handleChange}
+            /> Cash on Delivery
+          </label>
+
+          <label>
+            <input type="radio" name="paymentMethod" value="upi"
+              checked={formData.paymentMethod === 'upi'}
+              onChange={handleChange}
+            /> UPI
+          </label>
+
+          <label>
+            <input type="radio" name="paymentMethod" value="card"
+              checked={formData.paymentMethod === 'card'}
+              onChange={handleChange}
+            /> Card
+          </label>
 
           <button type="submit" className="place-order-btn">
             Place Order - ₹{total.toLocaleString()}
