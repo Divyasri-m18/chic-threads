@@ -30,7 +30,7 @@ function Checkout() {
     }));
   };
 
-  // ✅ PLACE ORDER (FINAL – WORKING)
+  // ✅ PLACE ORDER (FIXED)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,7 +43,6 @@ function Checkout() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             orderId,
@@ -67,7 +66,7 @@ function Checkout() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Order failed");
+        alert(data.message || "Order failed");
         return;
       }
 
