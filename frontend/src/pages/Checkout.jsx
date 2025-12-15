@@ -37,7 +37,8 @@ function Checkout() {
     const orderId = "ORD" + Date.now();
 
     try {
-      await fetch("http://localhost:5000/api/orders/place", {
+      await fetch("https://chic-threads-backend.onrender.com/api/orders"
+, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

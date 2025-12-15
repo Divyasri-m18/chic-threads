@@ -23,9 +23,10 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 🔴 ONLY THIS URL CHANGED
     const url = isLogin
-      ? "http://localhost:5000/api/auth/login"
-      : "http://localhost:5000/api/auth/register";
+      ? "https://chic-threads-backend.onrender.com/api/auth/login"
+      : "https://chic-threads-backend.onrender.com/api/auth/register";
 
     try {
       const res = await fetch(url, {
