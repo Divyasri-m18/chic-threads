@@ -15,19 +15,23 @@ console.log("EMAIL_USER:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "LOADED" : "MISSING");
 console.log("MONGO_URI:", process.env.MONGO_URI ? "LOADED" : "MISSING");
 
-
-
 /* =======================
    APP
 ======================= */
 const app = express();
 
 /* =======================
-   CORS (LOCAL ONLY)
+   CORS (LOCAL + VERCEL)
 ======================= */
 app.use(
   cors({
-    origin: "http://localhost:8080", // frontend local
+    origin: [
+      "http://localhost:8080",
+      "http://localhost:3000",
+      "https://chic-threads-seven.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
