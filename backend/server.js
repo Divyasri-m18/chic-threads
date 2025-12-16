@@ -7,47 +7,71 @@ import nodemailer from "nodemailer";
 import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 
+/* =======================
+   ENV
+======================= */
 dotenv.config();
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "LOADED" : "MISSING");
+console.log("MONGO_URI:", process.env.MONGO_URI ? "LOADED" : "MISSING");
 
+
+
+/* =======================
+   APP
+======================= */
 const app = express();
 
-app.use(cors());
+/* =======================
+   CORS (LOCAL ONLY)
+======================= */
+app.use(
+  cors({
+    origin: "http://localhost:8080", // frontend local
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-// ✅ ROUTES
+/* =======================
+   ROUTES
+======================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 
-// ✅ DB CONNECTION
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
+/* =======================
+   DB
+======================= */
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ Mongo error", err));
 
-    // 🔥 TEST EMAIL (ONCE)
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // 👈 APP PASSWORD
-      },
-    });
+/* =======================
+   TEST MAIL (ON SERVER START)
+======================= */
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-    transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL,
-      subject: "Test Mail ✅ Chic Threads",
-      text: "Mail setup working perfectly 🎉",
-    })
-    .then(() => {
-      console.log("✅ Test mail sent successfully");
-    })
-    .catch((err) => {
-      console.error("❌ Mail error:", err.message);
-    });
+transporter
+  .sendMail({
+    from: `"Chic Threads" <${process.env.EMAIL_USER}>`,
+    to: process.env.EMAIL_USER,
+    subject: "✅ Chic Threads – Local Test Mail",
+    text: "Backend mail setup working perfectly 🎉",
   })
-  .catch(err => console.error("❌ DB error", err));
+  .then(() => console.log("✅ Test mail sent (LOCAL)"))
+  .catch((err) => console.error("❌ Mail error", err.message));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+/* =======================
+   START
+======================= */
+app.listen(5000, () => {
+  console.log("🚀 Backend running at http://localhost:5000");
+});

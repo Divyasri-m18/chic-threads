@@ -37,7 +37,7 @@ function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Server error");
+        alert(data.error || data.message || "Server error");
         return;
       }
 

@@ -30,38 +30,36 @@ function Checkout() {
     }));
   };
 
-  // ✅ PLACE ORDER (FIXED)
+  // ✅ PLACE ORDER (FINAL – LOCAL BACKEND)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const orderId = "ORD" + Date.now();
-
     try {
-      const res = await fetch(
-        "https://chic-threads-backend.onrender.com/api/orders/place",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      const res = await fetch("/api/orders/place", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cartItems.map((item) => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          totalAmount: total,
+          paymentMethod: formData.paymentMethod,
+          shippingAddress: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            pincode: formData.pincode,
           },
-          body: JSON.stringify({
-            orderId,
-            userEmail: formData.email,
-            items: cartItems,
-            totalAmount: total,
-            paymentMethod: formData.paymentMethod,
-            shippingAddress: {
-              firstName: formData.firstName,
-              lastName: formData.lastName,
-              phone: formData.phone,
-              address: formData.address,
-              city: formData.city,
-              state: formData.state,
-              pincode: formData.pincode,
-            },
-          }),
-        }
-      );
+        }),
+      });
 
       const data = await res.json();
 
